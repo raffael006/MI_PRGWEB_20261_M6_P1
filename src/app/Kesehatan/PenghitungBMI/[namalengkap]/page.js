@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link"; // Import komponen Link (Latihan No. 5)
-import { hitungBMI } from "@/lib/bmi"; // Import fungsi eksternal (Latihan No. 2)
+import Link from "next/link";
+import { hitungBMI } from "@/lib/bmi";
 
-export default function Page() {
+// 1. Pindahkan logika utama ke dalam komponen terpisah (bukan export default)
+function KalkulatorBMI() {
     const params = useParams();
-    const nama = decodeURIComponent(params.namalengkap).replaceAll("-", " ");
+
+    // Berikan string kosong sebagai fallback awal mencegah error saat pre-render
+    const namalengkap = params?.namalengkap || "";
+    const nama = decodeURIComponent(namalengkap).replaceAll("-", " ");
 
     const [berat, setBerat] = useState("");
     const [tinggi, setTinggi] = useState("");
@@ -18,7 +22,6 @@ export default function Page() {
         setHasil(hitungBMI(Number.parseFloat(berat), Number.parseFloat(tinggi)));
     }
 
-    // Fungsi mengosongkan nilai form dan hasil (Latihan No. 4)
     function handleReset() {
         setBerat("");
         setTinggi("");
@@ -65,7 +68,6 @@ export default function Page() {
                     <button type="submit" style={{ padding: 8, flex: 1 }}>
                         Hitung
                     </button>
-                    {/* Tombol Reset (Latihan No. 4) */}
                     <button
                         type="button"
                         onClick={handleReset}
@@ -79,19 +81,26 @@ export default function Page() {
             {hasil && (
                 <p style={{ marginTop: 16 }}>
                     BMI kamu: <strong>{hasil.bmi}</strong>{" "}
-                    {/* Terapkan dynamic color sesuai hasil BMI (Latihan No. 3) */}
                     <span style={{ color: hasil.warna, fontWeight: "bold" }}>
                         ({hasil.kategori})
                     </span>
                 </p>
             )}
 
-            {/* Tautan kembali ke halaman utama (Latihan No. 5) */}
             <div style={{ marginTop: 32 }}>
                 <Link href="/" style={{ color: "blue", textDecoration: "underline" }}>
                     Bukan kamu? Ganti nama
                 </Link>
             </div>
         </main>
+    );
+}
+
+// 2. Buat export default baru yang membungkus komponen KalkulatorBMI dengan Suspense
+export default function Page() {
+    return (
+        <Suspense fallback={<div style={{ textAlign: "center", padding: "40px" }}>Memuat kalkulator...</div>}>
+            <KalkulatorBMI />
+        </Suspense>
     );
 }
