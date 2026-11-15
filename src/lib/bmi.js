@@ -1,0 +1,25 @@
+// src/lib/bmi.js
+
+export function hitungBMI(beratKg, tinggiCm) {
+    const m = tinggiCm / 100;
+    const bmi = beratKg / (m * m);
+
+    let kategori;
+    let warna; // Menambahkan variabel untuk menyimpan warna (Latihan No. 3)
+
+    if (bmi < 18.5) {
+        kategori = "Berat badan kurang";
+        warna = "blue";
+    } else if (bmi < 25) {
+        kategori = "Normal";
+        warna = "green";
+    } else if (bmi < 30) {
+        kategori = "Berat badan berlebih";
+        warna = "#d4b106"; // Kuning gelap agar lebih mudah dibaca di latar putih
+    } else {
+        kategori = "Obesitas";
+        warna = "red";
+    }
+
+    return { bmi: bmi.toFixed(1), kategori, warna };
+}
